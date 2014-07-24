@@ -15,7 +15,21 @@ module.exports.locationsListByDistance = function(req, res) {
 };
 
 module.exports.locationsReadOne = function(req, res) {
-    sendJSONresponse(res, 200, {"status" : "success"});
+    if (req.params && req.params.locationid) {
+        Loc.findById(req.params.locationid)
+           .exec(function(err, location) {
+               if (!location) {
+                   sendJSONresponse(res, 404, { "message" : "locationid not found" });   
+                   return;
+               } else if (err) {
+                   sendJSONresponse(res, 404, err);   
+                   return;                   
+               }
+               sendJSONresponse(res, 200, location);
+           });
+   } else {
+       sendJSONresponse(res, 404, { "message" : "No locationid in request" });       
+   }
 };
 
 module.exports.locationsUpdateOne = function(req, res) {
